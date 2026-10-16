@@ -1,6 +1,7 @@
 library(tidyquant)
 library(tidyverse)
 
+#3.1
 unemp_raw <- tq_get(
   c("UNRATE", "ORUR", "CAUR", "TXUR", "NYUR"),
   get  = "economic.data",
@@ -13,8 +14,10 @@ dir.create("data", showWarnings = FALSE)
 
 write_rds(unemp_raw, "data/unemp_raw.rds")
 
+#3.2
 unemp_raw = read_rds("data/unemp_raw.rds")
 
+#4.1
 unemp <- unemp_raw |>
   rename(unemployment_rate = price) |>
   mutate(
@@ -27,6 +30,8 @@ unemp <- unemp_raw |>
     )
   )
 
+
+#4.2
 unemp <- unemp |>
   arrange(region, date) |>
   group_by(region) |>
@@ -58,7 +63,7 @@ unemp_summary <- unemp |>
   )
 head(unemp_summary)
 
-
+#4.3
 unemp_top_increases <- unemp |>
   slice_max(order_by = unemployment_rate_change, n = 5)
 unemp_top_decreases <- unemp |>
@@ -66,12 +71,21 @@ unemp_top_decreases <- unemp |>
 unemp_top_increases
 unemp_top_decreases
 
+
+#4.4
 unemp_no_covid <- unemp |>
   filter(date >= as.Date("2021-01-01")|
            date<as.Date("2020-01-01"))
 
 unemp_no_covid
 
+
+unemp_top_increases_no_covid <- unemp_no_covid |>
+  slice_max(order_by = unemployment_rate_change, n = 5)
+unemp_top_decreases_no_covid <- unemp_no_covid |>
+  slice_min(order_by = unemployment_rate_change, n = 5)
+unemp_top_increases_no_covid
+unemp_top_decreases_no_covid
 
 
 
