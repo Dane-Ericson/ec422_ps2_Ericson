@@ -57,4 +57,21 @@ unemp_summary <- unemp |>
     max_rate = max(unemployment_rate, na.rm = TRUE)
   )
 head(unemp_summary)
-# 
+
+
+unemp_top_increases <- unemp |>
+  slice_max(order_by = unemployment_rate_change, n = 5)
+unemp_top_decreases <- unemp |>
+  slice_min(order_by = unemployment_rate_change, n = 5)
+unemp_top_increases
+unemp_top_decreases
+
+unemp_no_covid <- unemp |>
+  filter(date >= as.Date("2021-01-01")|
+           date<as.Date("2020-01-01"))
+
+unemp_no_covid
+
+
+
+
