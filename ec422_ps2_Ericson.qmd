@@ -12,11 +12,16 @@ format:
 
 <https://github.com/Dane-Ericson/ec422_ps2_Ericson>
 
-##Data
+## Data
 
 The dataset used in this problem set contains the monthly unemployment rate data from the Federal Reserve Economic Database (FRED). The dataset contains rates from the United States as a whole as well as various US States (California, Oregon, New York and Texas), from January of 1976 up until the present. Also worth noting is that the unemployment rates are denoted as Prices in the dataset.
 
 ```{r}
+
+library(tidyquant)
+library(tidyverse)
+library(knitr)
+source("ps2_script_Ericson.R")
 unemp_raw <- tq_get(
   c("UNRATE", "ORUR", "CAUR", "TXUR", "NYUR"),
   get  = "economic.data",
@@ -30,7 +35,7 @@ dir.create("data", showWarnings = FALSE)
 write_rds(unemp_raw, "data/unemp_raw.rds")
 ```
 
-##Wrangling
+## Wrangling
 
 1.  The following table displays the mean, minimum, and maximum unemployment rate for each region.
 
@@ -88,7 +93,7 @@ kable(
 )
 ```
 
-##Visualization
+## Visualization
 
 1.  The following table depicts the simultaneous unemployment rates by region over time.
 
@@ -139,6 +144,6 @@ geom_col(position = "dodge") +
   theme_classic()
 ```
 
-##Reflection
+## Reflection
 
 I had an excellent experience completing this problem set, as the challenges it proposed to me along with the data in and of itself were exceedingly interesting to me. Upon first seeing the assignment, I was quite nervous due to my R skills feeling a bit rusty, and not having too much experience using git and github. However, utilizing git and github were rather straightforward once I got through the setup and my first couple git pushes, and while some of the tasks in the R script itself were initially challenging due to difficulty remembering syntax and packages, I was able to use my resources and not only feel comfortable completing the tasks, but learning and experimenting with some new tools along the way. The data in this problem set was also very enjoyable to work with, as it was clean and easy to understand, while still displaying interesting relationships and allowing for plenty of maneuverability whilst wrangling and especially whilst visualizing the data.
