@@ -88,4 +88,43 @@ unemp_top_increases_no_covid
 unemp_top_decreases_no_covid
 
 
+#5.1
+ggplot(unemp, aes(x = date, y = unemployment_rate, color = region)) +
+  geom_line() + geom_area() +
+  labs(title = "Unemployment Rate Over Time By Region", x = "Date", y = "Unemployment Rate") +
+  theme_minimal()
 
+#5.2
+ggplot(unemp, aes(x = date, y = unemployment_rate, color = region)) +
+  geom_line() + geom_area(fill = "tan")+
+  labs(title = "Unemployment Rate Over Time By Region", x = "Date", y = "Unemployment Rate") +
+  theme_minimal() +
+  facet_wrap(~ region)
+
+#5.3
+ggplot(unemp_summary, aes(x = fct_reorder(region, mean_rate), y = mean_rate, color = region)) +
+  geom_col(fill = "white") +
+  theme_classic()+
+  labs(title = "Mean Unemployment by Region", y = "Mean Unemployment")
+
+#5.4
+unemp_changes <- bind_rows(
+  unemp_top_increases, 
+  unemp_top_decreases
+)
+
+ggplot(unemp_changes, aes(x = region, y = unemployment_rate_change, fill = unemployment_rate_change > 0))+
+geom_col(position = "dodge") + 
+  labs(
+    title = "Largest Increases and Decreases in Employment by Region",
+    x = "Region",
+    y = "Change in Unemployment Rate",
+    fill = ("Direction of Change"),
+  ) +
+  theme_classic()
+  
+#I chose to plot the largest unemployment increases and decreases over the entire dataset by region, as it displays which regions have seen the largest shocks to employment over time or had the largest periods of economic fluctuation.
+
+
+
+       
