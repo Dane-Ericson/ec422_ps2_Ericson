@@ -1,0 +1,144 @@
+---
+title: "Problem Set 2"
+author: "Dane Ericson"
+date: 10/16/2026
+format:
+  html:
+    toc: true
+    embed-resources: true
+---
+
+## **Github Repo**
+
+<https://github.com/Dane-Ericson/ec422_ps2_Ericson>
+
+##Data
+
+The dataset used in this problem set contains the monthly unemployment rate data from the Federal Reserve Economic Database (FRED). The dataset contains rates from the United States as a whole as well as various US States (California, Oregon, New York and Texas), from January of 1976 up until the present. Also worth noting is that the unemployment rates are denoted as Prices in the dataset.
+
+```{r}
+unemp_raw <- tq_get(
+  c("UNRATE", "ORUR", "CAUR", "TXUR", "NYUR"),
+  get  = "economic.data",
+  from = "1976-01-01"
+)
+
+head(unemp_raw)
+
+dir.create("data", showWarnings = FALSE)
+
+write_rds(unemp_raw, "data/unemp_raw.rds")
+```
+
+##Wrangling
+
+1.  The following table displays the mean, minimum, and maximum unemployment rate for each region.
+
+```{r}
+#| echo: false
+
+
+kable(
+  unemp_summary,
+  digits = 2,
+  col.names = c("Region", "Mean Rate", "Minimum Rate", "Maximum Rate"),
+  caption = "Summary Statistics of Unemployment Rates by Region"
+)
+
+```
+
+2.  The following table displays the mean, maximum, and minimum unemployment rates per region since 2015
+
+```{r}
+#| echo: false
+
+kable(
+  unemp_recent_summary,
+  digits = 2,
+  col.names = c("Region", "Mean Rate", "Minimum Rate", "Maximum Rate"),
+  caption = "Regional Unemployment Statistics Since 2015"
+)
+```
+
+3.  The following table displays the five largest monthly increases in unemployment rate excluding the COVID-19 pandemic.
+
+```{r}
+#| echo: false
+
+kable(
+  unemp_top_increases_no_covid,
+  digits = 2,
+  col.names = c("Symbol", "Date", "Unemployment Rate",
+                "Region", "Monthly Rate Change"),
+  caption = "Top 5 Monthly Unemployment Increases"
+)
+```
+
+4. The following table displays the five largest monthly decreases in unemployment rate excluding the COVID-19 pandemic.
+
+```{r}
+#| echo: false
+
+kable(
+  unemp_top_decreases_no_covid,
+  digits = 2,
+  col.names = c("Symbol", "Date", "Unemployment Rate",
+                "Region", "Monthly Rate Change"),
+  caption = "Top 5 Monthly Unemployment Decreases"
+)
+```
+
+##Visualization
+
+1.  The following table depicts the simultaneous unemployment rates by region over time.
+
+```{r}
+#| echo: false
+ggplot(unemp, aes(x = date, y = unemployment_rate, color = region)) +
+  geom_line() + geom_area() +
+  labs(title = "Unemployment Rate Over Time By Region", x = "Date", y = "Unemployment Rate") +
+  theme_minimal()
+```
+
+2.  The following graph holds the same data as the previous graph, but displays each region separately.
+
+```{r}
+#| echo: false
+ggplot(unemp, aes(x = date, y = unemployment_rate, color = region)) +
+  geom_line() + geom_area(fill = "tan")+
+  labs(title = "Unemployment Rate Over Time By Region", x = "Date", y = "Unemployment Rate") +
+  theme_minimal() +
+  facet_wrap(~ region)
+```
+
+3.  The following graph depicts the average unemployment rates for each region over the entire dataset.
+
+```{r}
+#| echo: false
+ggplot(unemp_summary, aes(x = fct_reorder(region, mean_rate), y = mean_rate, color = region)) +
+  geom_col(fill = "white") +
+  theme_classic()+
+  labs(title = "Mean Unemployment by Region", y = "Mean Unemployment", x = "Region")
+```
+
+4.  The following graph displays how the top 5 positive and negative unemployment shocks over the entire dataset impacted each region. I chose to plot this as it displays which regions have seen the largest shocks to employment over time or had the largest periods of economic fluctuation.
+
+```{r}
+#| echo: false
+ggplot(unemp_changes, aes(x = region, y = unemployment_rate_change, fill = unemployment_rate_change > 0)) +
+geom_col(position = "dodge") + 
+  labs(
+    title = "Largest Increases and Decreases in Employment by Region",
+    x = "Region",
+    y = "Change in Unemployment Rate",
+    fill = ("Direction of Change"),
+  ) + 
+  scale_fill_manual(
+    values = c("TRUE" = "darkgreen", "FALSE" = "red"),
+    labels = c("FALSE" = "Decrease", "TRUE" = "Increase"))+
+  theme_classic()
+```
+
+##Reflection
+
+I had an excellent experience completing this problem set, as the challenges it proposed to me along with the data in and of itself were exceedingly interesting to me. Upon first seeing the assignment, I was quite nervous due to my R skills feeling a bit rusty, and not having too much experience using git and github. However, utilizing git and github were rather straightforward once I got through the setup and my first couple git pushes, and while some of the tasks in the R script itself were initially challenging due to difficulty remembering syntax and packages, I was able to use my resources and not only feel comfortable completing the tasks, but learning and experimenting with some new tools along the way. The data in this problem set was also very enjoyable to work with, as it was clean and easy to understand, while still displaying interesting relationships and allowing for plenty of maneuverability whilst wrangling and especially whilst visualizing the data.

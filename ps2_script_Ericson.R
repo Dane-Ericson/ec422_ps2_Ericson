@@ -1,6 +1,6 @@
 library(tidyquant)
 library(tidyverse)
-
+library(knitr)
 #3.1
 unemp_raw <- tq_get(
   c("UNRATE", "ORUR", "CAUR", "TXUR", "NYUR"),
@@ -60,8 +60,25 @@ unemp_summary <- unemp |>
     mean_rate = mean(unemployment_rate, na.rm = TRUE),
     min_rate = min(unemployment_rate, na.rm = TRUE),
     max_rate = max(unemployment_rate, na.rm = TRUE)
+    
   )
 head(unemp_summary)
+
+kable(
+  unemp_summary,
+  digits = 2,
+  col.names = c("Region", "Mean Rate", "Minimum Rate", "Maximum Rate"),
+  caption = "Summary Statistics of Unemployment Rates by Region"
+)
+
+unemp_recent_summary <- unemp_recent |>
+  group_by(region)|>
+  summarize(
+    mean_rate = mean(unemployment_rate, na.rm = TRUE),
+    min_rate = min(unemployment_rate, na.rm = TRUE),
+    max_rate = max(unemployment_rate, na.rm = TRUE)
+  )
+head(unemp_recent_summary)
 
 #4.3
 unemp_top_increases <- unemp |>
@@ -105,7 +122,7 @@ ggplot(unemp, aes(x = date, y = unemployment_rate, color = region)) +
 ggplot(unemp_summary, aes(x = fct_reorder(region, mean_rate), y = mean_rate, color = region)) +
   geom_col(fill = "white") +
   theme_classic()+
-  labs(title = "Mean Unemployment by Region", y = "Mean Unemployment")
+  labs(title = "Mean Unemployment by Region", y = "Mean Unemployment", x = "Region")
 
 #5.4
 unemp_changes <- bind_rows(
@@ -113,14 +130,17 @@ unemp_changes <- bind_rows(
   unemp_top_decreases
 )
 
-ggplot(unemp_changes, aes(x = region, y = unemployment_rate_change, fill = unemployment_rate_change > 0))+
-geom_col(position = "dodge") + 
+ggplot(unemp_changes, aes(x = region, y = unemployment_rate_change, fill = unemployment_rate_change > 0)) +
+  geom_col(position = "dodge") + 
   labs(
     title = "Largest Increases and Decreases in Employment by Region",
     x = "Region",
     y = "Change in Unemployment Rate",
     fill = ("Direction of Change"),
-  ) +
+  ) + 
+  scale_fill_manual(
+    values = c("TRUE" = "darkgreen", "FALSE" = "red"),
+    labels = c("FALSE" = "Decrease", "TRUE" = "Increase"))+
   theme_classic()
   
 #I chose to plot the largest unemployment increases and decreases over the entire dataset by region, as it displays which regions have seen the largest shocks to employment over time or had the largest periods of economic fluctuation.
